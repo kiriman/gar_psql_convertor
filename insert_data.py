@@ -37,7 +37,7 @@ def insert_streets_data(cursor, dictionary_street):
 def insert_buildings_data(cursor, dictionary_building):
     try:
         for key, value in tqdm(dictionary_building.items(), ncols=120, desc='insert_buildings_data'):
-            cursor.execute('INSERT INTO "buildings" (id, street_id, number, type, add_num1, add_num2) VALUES (%s, %s, %s, %s, %s, %s);', (key, value['street_id'], value['number'], value['type'], value['add_num1'], value['add_num1']))
+            cursor.execute('INSERT INTO "buildings" (id, street_id, number, type, add_num1, add_num2, add_type1, add_type2) VALUES (%s, %s, %s, %s, %s, %s, %s, %s);', (key, value['street_id'], value['number'], value['type'], value['add_num1'], value['add_num2'], value['add_type1'], value['add_type2']))
             
         cursor.connection.commit()
 

@@ -38,7 +38,42 @@ def dictionaries(cursor):
 
         return dictionary_locality, dictionary_street, dictionary_building
     except Exception as e:
-        print(f"Ошибка при формировании словаря: {e}")
+        print(f"Ошибка при формировании основных словарей: {e}")
+        return False
+    
+def additional_dictionaries(cursor):
+
+    query = f'SELECT "ID", "SHORTNAME" FROM "HOUSE_TYPES";'
+    cursor.execute(query)
+    house_types_rows = cursor.fetchall()
+
+    query = f'SELECT "ID", "SHORTNAME" FROM "ADDHOUSE_TYPES";'
+    cursor.execute(query)
+    add_house_types_rows = cursor.fetchall()
+
+    # dictionary_locality[key]['name'] = rows[0][0]
+    # dictionary_locality[key]['typename'] = rows[0][1]
+
+    rows = cursor.fetchall()
+    print(f"Количество записей MUN_HIERARCHY: {len(rows)}")
+
+    try:
+        dictionary_house_types = {}
+        dictionary_add_house_types = {}
+
+        for [id, shortname] in tqdm(house_types_rows, ncols=120, desc='additional_dictionaries (HOUSE_TYPES)'):
+            if id:
+                dictionary_house_types.setdefault(id, { 'shortname': shortname })
+
+        for [id, shortname] in tqdm(add_house_types_rows, ncols=120, desc='additional_dictionaries (ADDRHOUSE_TYPES)'):
+            if id:
+                dictionary_add_house_types.setdefault(id, { 'shortname': shortname })
+
+        print(f"")
+
+        return dictionary_house_types, dictionary_add_house_types
+    except Exception as e:
+        print(f"Ошибка при формировании основных словарей: {e}")
         return False
     
 def update_localities_dictionary(source_cursor, dictionary_locality):
@@ -82,14 +117,14 @@ def update_streets_dictionary(source_cursor, dictionary_street):
         print(f"Ошибка при обновлении словаря: {e} {dictionary_street}")
         return False
 
-def update_buildings_dictionary(source_cursor, dictionary_building):
+def update_buildings_dictionary(source_cursor, dictionary_building, dictionary_house_types, dictionary_add_house_types):
     try:
         keys_to_delete = []
         normalized_houses = {}
 
         # ---------------------------------------------------------------------------------------------------------v.2 (faster)
         query = '''
-            SELECT "OBJECTID", "HOUSENUM", "HOUSETYPE", "ADDNUM1", "ADDNUM2"
+            SELECT "OBJECTID", "HOUSENUM", "HOUSETYPE", "ADDNUM1", "ADDNUM2", "ADDTYPE1", "ADDTYPE2"
             FROM "HOUSES"
             WHERE "ISACTUAL" = 1 AND "ISACTIVE" = 1;
         '''
@@ -105,13 +140,24 @@ def update_buildings_dictionary(source_cursor, dictionary_building):
                     'type': row[2] if row[2] is not None else '',
                     'add_num1': row[3] if row[3] is not None else '',
                     'add_num2': row[4] if row[4] is not None else '',
+                    'add_type1': row[5] if row[5] is not None else '',
+                    'add_type2': row[6] if row[6] is not None else '',
                 })
 
         for key, value in tqdm(dictionary_building.items(), ncols=120, desc='update_buildings_dictionary v.2'):
             key_int = int(key)
             if key_int in normalized_houses:
                 dictionary_building[key]['number'] = normalized_houses[key_int]['number']
-                dictionary_building[key]['type'] = normalized_houses[key_int]['type']
+                
+                key_type = normalized_houses[key_int]['type']
+                dictionary_building[key]['type'] = dictionary_house_types[key_type]['shortname']
+
+                key_add_type1 = normalized_houses[key_int]['add_type1']
+                dictionary_building[key]['add_type1'] = dictionary_add_house_types[key_add_type1]['shortname'] if key_add_type1 else None
+
+                key_add_type2 = normalized_houses[key_int]['add_type2']
+                dictionary_building[key]['add_type2'] = dictionary_add_house_types[key_add_type2]['shortname'] if key_add_type2 else None
+
                 dictionary_building[key]['add_num1'] = normalized_houses[key_int]['add_num1']
                 dictionary_building[key]['add_num2'] = normalized_houses[key_int]['add_num2']
             else:
