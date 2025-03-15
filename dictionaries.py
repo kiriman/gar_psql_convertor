@@ -10,18 +10,15 @@ query_dict = {
 
 def dictionaries(cursor):
     base_path = os.getenv('BASE_PATH')
-
     cursor.execute(query_dict['MUN_HIERARCHY'].format(base_path=base_path))
-
     rows = cursor.fetchall()
-    print(f"Количество записей MUN_HIERARCHY: {len(rows)}")
 
     try:
         dictionary_locality = {}
         dictionary_street = {}
         dictionary_building = {}
 
-        for [path] in tqdm(rows, ncols=120, desc='dictionaries'):
+        for [path] in tqdm(rows, ncols=120, desc='dictionaries (MUN_HIERARCHY)'):
             path_parts = path.split('.')
             locality_id = path_parts[2] if len(path_parts) > 2 else None
             street_id = path_parts[3] if len(path_parts) > 3 else None
@@ -50,9 +47,6 @@ def additional_dictionaries(cursor):
     query = f'SELECT "ID", "SHORTNAME" FROM "ADDHOUSE_TYPES";'
     cursor.execute(query)
     add_house_types_rows = cursor.fetchall()
-
-    rows = cursor.fetchall()
-    print(f"Количество записей MUN_HIERARCHY: {len(rows)}")
 
     try:
         dictionary_house_types = {}
