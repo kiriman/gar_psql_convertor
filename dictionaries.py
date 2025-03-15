@@ -51,9 +51,6 @@ def additional_dictionaries(cursor):
     cursor.execute(query)
     add_house_types_rows = cursor.fetchall()
 
-    # dictionary_locality[key]['name'] = rows[0][0]
-    # dictionary_locality[key]['typename'] = rows[0][1]
-
     rows = cursor.fetchall()
     print(f"Количество записей MUN_HIERARCHY: {len(rows)}")
 
@@ -84,7 +81,7 @@ def update_localities_dictionary(source_cursor, dictionary_locality):
             # column_names = [desc[0] for desc in source_cursor.description]
             rows = source_cursor.fetchall()
             dictionary_locality[key]['name'] = rows[0][0]
-            dictionary_locality[key]['typename'] = rows[0][1]
+            dictionary_locality[key]['type'] = rows[0][1]
 
         return dictionary_locality
     
@@ -104,7 +101,7 @@ def update_streets_dictionary(source_cursor, dictionary_street):
 
             if len(rows) > 0:
                 dictionary_street[key]['name'] = rows[0][0]
-                dictionary_street[key]['typename'] = rows[0][1]
+                dictionary_street[key]['type'] = rows[0][1]
             else:
                 keys_to_delete.append(key)
 

@@ -6,7 +6,7 @@ from tqdm import tqdm
 def insert_localities_data(cursor, dictionary_locality):
     try:
         for key, value in tqdm(dictionary_locality.items(), ncols=120, desc='insert_localities_data'):
-            cursor.execute('INSERT INTO "localities" (id, name, typename) VALUES (%s, %s, %s);', (key, value['name'], value['typename']))
+            cursor.execute('INSERT INTO "localities" (id, name, type) VALUES (%s, %s, %s);', (key, value['name'], value['type']))
 
         cursor.connection.commit()
         
@@ -22,7 +22,7 @@ def insert_streets_data(cursor, dictionary_street):
     try:
         for key, value in tqdm(dictionary_street.items(), ncols=120, desc='insert_streets_data'):
             current = value
-            cursor.execute('INSERT INTO "streets" (id, locality_id, name, typename) VALUES (%s, %s, %s, %s);', (key, value['locality_id'], value['name'], value['typename']))
+            cursor.execute('INSERT INTO "streets" (id, locality_id, name, type) VALUES (%s, %s, %s, %s);', (key, value['locality_id'], value['name'], value['type']))
         
         # Фиксируем изменения
         cursor.connection.commit()

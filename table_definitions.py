@@ -11,7 +11,7 @@ TABLE_DEFINITIONS = {
         CREATE TABLE localities (
             id INTEGER NOT NULL PRIMARY KEY,
             name VARCHAR(256) NOT NULL,
-            typename VARCHAR(50) NOT NULL
+            type VARCHAR(50) NOT NULL
         );
     """,
     
@@ -20,7 +20,7 @@ TABLE_DEFINITIONS = {
             id INTEGER NOT NULL PRIMARY KEY,
             locality_id INTEGER NOT NULL,
             name VARCHAR(256) NOT NULL,
-            typename VARCHAR(50)
+            type VARCHAR(50)
         );
     """,
     
