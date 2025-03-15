@@ -5,7 +5,7 @@ import os
 from tqdm import tqdm
 
 query_dict = {
-    'MUN_HIERARCHY': 'SELECT "OBJECTID", "PATH" FROM "MUN_HIERARCHY" WHERE "PATH" LIKE \'{base_path}.%\' AND "ISACTIVE" = 1;'
+    'MUN_HIERARCHY': 'SELECT "PATH" FROM "MUN_HIERARCHY" WHERE "PATH" LIKE \'{base_path}.%\' AND "ISACTIVE" = 1;'
 }
 
 def dictionaries(cursor):
@@ -21,18 +21,18 @@ def dictionaries(cursor):
         dictionary_street = {}
         dictionary_building = {}
 
-        for objectid, path in tqdm(rows, ncols=120, desc='dictionaries'):
+        for [path] in tqdm(rows, ncols=120, desc='dictionaries'):
             path_parts = path.split('.')
             locality_id = path_parts[2] if len(path_parts) > 2 else None
             street_id = path_parts[3] if len(path_parts) > 3 else None
             building_id = path_parts[4] if len(path_parts) > 4 else None
 
             if locality_id:
-                dictionary_locality.setdefault(locality_id, { 'objectid': locality_id })
+                dictionary_locality.setdefault(locality_id, { 'id': locality_id })
             if street_id:
-                dictionary_street.setdefault(street_id, { 'locality_id': locality_id, 'objectid': street_id })
+                dictionary_street.setdefault(street_id, { 'locality_id': locality_id, 'id': street_id })
             if building_id:
-                dictionary_building.setdefault(building_id, { 'street_id': street_id, 'objectid': building_id })
+                dictionary_building.setdefault(building_id, { 'street_id': street_id, 'id': building_id })
 
         print(f"")
 
@@ -101,19 +101,19 @@ def update_buildings_dictionary(source_cursor, dictionary_building):
         else:
             for row in tqdm(rows, ncols=120, desc='Нормализуем данные из таблицы "HOUSES"'):
                 normalized_houses.setdefault(row[0], {
-                    'housenum': row[1] if row[1] is not None else '',
-                    'housetype': row[2] if row[2] is not None else '',
-                    'addnum1': row[3] if row[3] is not None else '',
-                    'addnum2': row[4] if row[4] is not None else '',
+                    'number': row[1] if row[1] is not None else '',
+                    'type': row[2] if row[2] is not None else '',
+                    'add_num1': row[3] if row[3] is not None else '',
+                    'add_num2': row[4] if row[4] is not None else '',
                 })
 
         for key, value in tqdm(dictionary_building.items(), ncols=120, desc='update_buildings_dictionary v.2'):
             key_int = int(key)
             if key_int in normalized_houses:
-                dictionary_building[key]['housenum'] = normalized_houses[key_int]['housenum']
-                dictionary_building[key]['housetype'] = normalized_houses[key_int]['housetype']
-                dictionary_building[key]['addnum1'] = normalized_houses[key_int]['addnum1']
-                dictionary_building[key]['addnum2'] = normalized_houses[key_int]['addnum2']
+                dictionary_building[key]['number'] = normalized_houses[key_int]['number']
+                dictionary_building[key]['type'] = normalized_houses[key_int]['type']
+                dictionary_building[key]['add_num1'] = normalized_houses[key_int]['add_num1']
+                dictionary_building[key]['add_num2'] = normalized_houses[key_int]['add_num2']
             else:
                 keys_to_delete.append(key)
 
@@ -129,10 +129,10 @@ def update_buildings_dictionary(source_cursor, dictionary_building):
         #     rows = source_cursor.fetchall()
 
         #     if len(rows) > 0:
-        #         dictionary_building[key]['housenum'] = rows[0][0]
-        #         dictionary_building[key]['housetype'] = rows[0][1]
-        #         dictionary_building[key]['addnum1'] = rows[0][2]
-        #         dictionary_building[key]['addnum2'] = rows[0][3]
+        #         dictionary_building[key]['number'] = rows[0][0]
+        #         dictionary_building[key]['type'] = rows[0][1]
+        #         dictionary_building[key]['add_num1'] = rows[0][2]
+        #         dictionary_building[key]['add_num2'] = rows[0][3]
         #     else:
         #         keys_to_delete.append(key)
         # ---------------------------------------------------------------------------------------------------------

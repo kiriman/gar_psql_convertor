@@ -9,8 +9,7 @@
 TABLE_DEFINITIONS = {    
     'localities': """
         CREATE TABLE localities (
-            id SERIAL PRIMARY KEY,
-            objectid INTEGER NOT NULL,
+            id INTEGER NOT NULL PRIMARY KEY,
             name VARCHAR(256) NOT NULL,
             typename VARCHAR(50) NOT NULL
         );
@@ -18,9 +17,8 @@ TABLE_DEFINITIONS = {
     
     'streets': """
         CREATE TABLE streets (
-            id SERIAL PRIMARY KEY,
+            id INTEGER NOT NULL PRIMARY KEY,
             locality_id INTEGER NOT NULL,
-            objectid INTEGER NOT NULL,
             name VARCHAR(256) NOT NULL,
             typename VARCHAR(50)
         );
@@ -28,15 +26,14 @@ TABLE_DEFINITIONS = {
     
     'buildings': """
         CREATE TABLE buildings (
-            id SERIAL PRIMARY KEY,
+            id INTEGER NOT NULL PRIMARY KEY,
             street_id INTEGER NOT NULL,
-            objectid INTEGER NOT NULL,
-            housenum VARCHAR(50) NOT NULL,
-            addnum1 VARCHAR(50),
-            addnum2 VARCHAR(50),
-            housetype VARCHAR(50),
-            addtype1 VARCHAR(50),
-            addtype2 VARCHAR(50)
+            number VARCHAR(50) NOT NULL,
+            add_num1 VARCHAR(50),
+            add_num2 VARCHAR(50),
+            type VARCHAR(50),
+            add_type1 VARCHAR(50),
+            add_type2 VARCHAR(50)
         );
     """
 }
