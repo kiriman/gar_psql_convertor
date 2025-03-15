@@ -9,7 +9,7 @@
 TABLE_DEFINITIONS = {    
     'localities': """
         CREATE TABLE localities (
-            id INTEGER NOT NULL PRIMARY KEY,
+            id BIGINT NOT NULL PRIMARY KEY,
             name VARCHAR(256) NOT NULL,
             type VARCHAR(50) NOT NULL
         );
@@ -17,8 +17,8 @@ TABLE_DEFINITIONS = {
     
     'streets': """
         CREATE TABLE streets (
-            id INTEGER NOT NULL PRIMARY KEY,
-            locality_id INTEGER NOT NULL,
+            id BIGINT NOT NULL PRIMARY KEY,
+            locality_id BIGINT NOT NULL,
             name VARCHAR(256) NOT NULL,
             type VARCHAR(50)
         );
@@ -26,8 +26,8 @@ TABLE_DEFINITIONS = {
     
     'buildings': """
         CREATE TABLE buildings (
-            id INTEGER NOT NULL PRIMARY KEY,
-            street_id INTEGER NOT NULL,
+            id BIGINT NOT NULL PRIMARY KEY,
+            street_id BIGINT NOT NULL,
             number VARCHAR(50) NOT NULL,
             add_num1 VARCHAR(50),
             add_num2 VARCHAR(50),
